@@ -1,0 +1,50 @@
+{
+  "document_kind": "harness_turn_request",
+  "contract": "openteams/satisfier-binding [0.1-draft]",
+  "request_id": "turn-example",
+  "binding": {
+    "binding_id": "binding-system-one-qwen",
+    "revision": 1
+  },
+  "model_binding": {
+    "binding_id": "qwen-local",
+    "revision": 1
+  },
+  "consumer": {
+    "id": "openteams/cog-ticket-triage",
+    "version": "0.1.0"
+  },
+  "context": [],
+  "task": {
+    "state": {
+      "subject": "Stripe integration broken",
+      "body": "Hi, I've been trying to connect my Stripe account for 3 days and the integration keeps failing. I'm losing sales. Please help ASAP."
+    },
+    "questions": {
+      "department": {
+        "type": "choice",
+        "instructions": "Which team should handle this support ticket?",
+        "criteria": {
+          "billing": "Payments, invoices, refunds or subscription changes",
+          "technical": "Bugs, outages, errors or integration problems",
+          "sales": "Pricing, upgrades, quotes or new accounts"
+        }
+      },
+      "frustration": {
+        "type": "score",
+        "instructions": "How frustrated does the customer appear?",
+        "criteria": [
+          "Calm, just stating facts",
+          "Frustrated but civil",
+          "Very angry, strong language"
+        ]
+      },
+      "is_urgent": {
+        "type": "noul",
+        "instructions": "The ticket conveys urgency or time-sensitivity."
+      }
+    }
+  },
+  "tool_grant_refs": [],
+  "thread_ref": null
+}

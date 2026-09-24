@@ -1,0 +1,102 @@
+{
+  "document_kind": "provider",
+  "contract": "openteams/satisfier-binding [0.1-draft]",
+  "provider": {
+    "id": "openteams/cog-system-one-adapter",
+    "version": "0.1.0"
+  },
+  "capability": "system-one/decisions",
+  "compositions": [
+    "harness"
+  ],
+  "binding_interface": "bind",
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "memory_mode": {
+        "const": "none"
+      },
+      "tool_policy": {
+        "const": "no-tools"
+      },
+      "model_binding": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "binding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "binding_id",
+          "revision"
+        ]
+      },
+      "locality": {
+        "enum": [
+          "local",
+          "cloud"
+        ],
+        "default": "cloud",
+        "description": "Must equal the admitted model binding's locality."
+      },
+      "answer_mode": {
+        "enum": [
+          "probabilities",
+          "discrete"
+        ],
+        "default": "probabilities",
+        "description": "probabilities: the LLM states a distribution per question; discrete: one value per question (confidence 1)."
+      },
+      "json_mode": {
+        "type": "boolean",
+        "default": false,
+        "description": "Ask the model gateway for JSON mode (response_format json_object). Off by default: the adapter's prompt asks for JSON and it validates locally, which tolerates small models that add trailing text."
+      },
+      "corrective_retries": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 3,
+        "default": 1,
+        "description": "Corrective re-asks when the model's JSON does not match the answer schema."
+      }
+    },
+    "required": [
+      "memory_mode",
+      "tool_policy",
+      "model_binding"
+    ]
+  },
+  "credential_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {},
+    "required": []
+  },
+  "model_requirement": {
+    "id": "system-one-model",
+    "capability": "model-endpoint/openai-compatible",
+    "accepted_compositions": [
+      "model"
+    ],
+    "features": [
+      "text-generation",
+      "json-output"
+    ],
+    "model_id": null,
+    "allowed_localities": [
+      "local",
+      "cloud"
+    ],
+    "evidence_level": "declaration",
+    "identity_verified": false,
+    "revision_pinned": false
+  }
+}

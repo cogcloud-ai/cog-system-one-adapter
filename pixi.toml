@@ -1,0 +1,25 @@
+[workspace]
+license = "Apache-2.0"
+name = "cog-system-one-adapter"
+version = "0.1.0"
+description = "system-one/decisions through TypeSafe's MIT System One adapter over a separately admitted OpenAI-compatible model."
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64"]
+
+[dependencies]
+python = ">=3.11"
+pyyaml = "*"
+jsonschema = "*"
+
+[pypi-dependencies]
+# TypeSafe's adapter (MIT) and the SDK types it returns (MIT), pinned exactly.
+system-one-adapter = "==0.2.1"
+typesafe-sdk = "==0.7.1"
+
+[tasks]
+turn = "python src/adapter_runtime.py turn"
+bind = "python src/adapter_runtime.py bind"
+card = "python src/adapter_runtime.py card"
+check = "python src/adapter_runtime.py check"
+validate = "python src/adapter_runtime.py validate"
+test = "python -m unittest discover -s tests -v"

@@ -1,0 +1,52 @@
+schema: openteams/cog-manifest [0.1]
+id: openteams/cog-system-one-adapter
+version: "0.1.0"
+summary: Answers System One typed questions with a separately admitted LLM through TypeSafe's System One adapter.
+owner: trent@openteams.com
+license: Apache-2.0
+kind: context
+memory: none
+prohibits:
+- self_admission
+- credential_export
+- silent_model_substitution
+- external_tool_grants
+requires: []
+provides:
+- system-one/decisions
+io:
+  accepts:
+  - harness_turn_request
+  - binding_request
+  produces:
+  - harness_turn_result
+  - candidate_binding
+extensions:
+  satisfier_binding:
+    contract: openteams/satisfier-binding [0.1-draft]
+    declaration: binding/provider.json
+interfaces:
+- name: turn
+  kind: command
+  task: turn
+  audience: usage
+  default: true
+- name: bind
+  kind: command
+  task: bind
+  audience: lifecycle
+- name: card
+  kind: command
+  task: card
+  audience: lifecycle
+- name: check
+  kind: command
+  task: check
+  audience: lifecycle
+- name: validate
+  kind: command
+  task: validate
+  audience: lifecycle
+evaluation:
+  tests:
+  - tests/test_adapter.py
