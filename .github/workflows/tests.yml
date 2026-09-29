@@ -20,6 +20,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: cogcloud-ai/cog-op-builder
+          # Coordinated suite snapshot includes System One providers and reviewed machinery.
+          ref: 1febb9e60b93a3123acc489759caac84f7edecb9
           path: workspace/cog-op-builder
           persist-credentials: false
       - uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e # v0.10.2
