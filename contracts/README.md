@@ -14,7 +14,7 @@ SHA-256: `21315aa24a57ccdf02b8c5fba2b8517fd58876d63c6b04109483b06df9950130`
 Canonical source: cog-smith `templates/decision-cog/src/system_one_contract.py`
 (decision-Cog machinery). Vendored byte-identically; fix it in Smith and copy.
 
-SHA-256: `3ae7029d067107668c1196f9653ac6e3b9b7aef3e53abe9c2178ee0ef9606da3`
+SHA-256: `151d5e7219eef7b9a989ef4c9eb7feeeca6a9b991eb568c4fe6f1c86af3321d5`
 
 Updates must copy the agreed file deliberately, update the digest here, and
 rerun this package's tests and Smith's decision-Cog tests.

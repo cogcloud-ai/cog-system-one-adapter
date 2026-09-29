@@ -138,19 +138,20 @@ SCHEMA = {
 
 def _errors(value, definition, echo=True):
     """Schema problems as strings. With echo=False (provider results) the
-    message names the location and rule only, never the offending value."""
+    message names the rule only: result paths can contain provider-supplied keys."""
     schema = dict(SCHEMA, **{"$ref": "#/$defs/" + definition})
     found = []
     for error in sorted(Draft202012Validator(schema).iter_errors(value),
                         key=lambda e: list(e.absolute_path)):
-        where = "/".join(str(p)[:64] for p in error.absolute_path) or "$"
+        where = ("/".join(str(p)[:64] for p in error.absolute_path) or "$") if echo else "$"
         detail = error.message if echo else f"violates {error.validator}"
         found.append(f"{definition} {where}: {detail}"[:300])
     return found
 
 
 def _finite(value):
-    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+    return ((isinstance(value, int) and not isinstance(value, bool))
+            or (isinstance(value, float) and math.isfinite(value)))
 
 
 def _short(value, limit=64):
@@ -187,7 +188,7 @@ def levels(question):
 def _mass(problems, qid, probabilities):
     total = sum(probabilities.values())
     if abs(total - 1) > probability_tolerance(len(probabilities)):
-        problems.append(f"answer {qid}: probabilities sum to {total:.4f}, not 1")
+        problems.append(f"answer {qid}: probabilities do not sum to 1")
 
 
 def result_problems(result, questions):
@@ -204,6 +205,8 @@ def result_problems(result, questions):
         problems.append(f"unanswered questions: {missing[:10]}")
     if extra:
         problems.append(f"{len(extra)} answer(s) to questions that were not asked")
+    if problems:
+        return problems
     # JSON Schema bounds pass NaN (every comparison with NaN is false), so
     # every number a provider returns is checked for finiteness here.
     for qid, answer in answers.items():
@@ -225,7 +228,7 @@ def result_problems(result, questions):
                 problems.append(f"answer {qid}: probabilities must cover exactly the declared options")
                 continue
             if answer["choice"] not in options:
-                problems.append(f"answer {qid}: choice {_short(repr(answer['choice']))} is not a declared option")
+                problems.append(f"answer {qid}: choice is not a declared option")
                 continue
             _mass(problems, qid, probabilities)
             if probabilities[answer["choice"]] + 1e-9 < max(probabilities.values()):
@@ -237,7 +240,18 @@ def result_problems(result, questions):
                 continue
             _mass(problems, qid, answer["probabilities"])
             if answer["score"] > len(keys) - 1 + 1e-9:
-                problems.append(f"answer {qid}: score {answer['score']} exceeds the top level {len(keys) - 1}")
+                problems.append(f"answer {qid}: score exceeds the declared top level")
+                continue
+            probabilities = answer["probabilities"]
+            total = sum(probabilities.values())
+            if total > 0:
+                expected = sum(i * probabilities[k] for i, k in enumerate(keys)) / total
+                # Allow two-decimal rounding of both the probabilities and
+                # score. Normalizing avoids treating rounded missing mass as
+                # an implicit probability at level zero.
+                tolerance = 0.01 + 0.005 * sum(abs(i - expected) for i in range(len(keys)))
+                if abs(answer["score"] - expected) > tolerance + 1e-9:
+                    problems.append(f"answer {qid}: score disagrees with its probability distribution")
     return problems
 
 
